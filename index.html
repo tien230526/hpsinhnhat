@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Trái Tim</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .night {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      animation: twinkle 2s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #pinkboard {
+      animation: heartbeat 1.5s infinite;
+      z-index: 1;
+    }
+    .btn-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      border-radius: 25px;
+      text-decoration: none;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(255, 20, 147, 0.7);
+      transition: transform 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.1);
+    }
+    .sparkle {
+      margin-right: 10px;
+    }
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="night"></div>
+  <canvas id="pinkboard"></canvas>
+  <div class="btn-container">
+    <a href="flower.html" class="btn">
+      <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" class="sparkle">
+        <path
+          d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z">
+        </path>
+      </svg>
+      <span class="text">Bấm vào đây nè!!!</span>
+    </a>
+  </div>
+  <script>
+    // Tạo sao ngẫu nhiên
+    (function() {
+      const night = document.querySelector('.night');
+      const numStars = 200;
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        // Phân bố theo chiều dọc: 70% (0-50vh), 20% (50-75vh), 10% (75-100vh)
+        let yPos;
+        const rand = Math.random();
+        if (rand < 0.7) {
+          yPos = Math.random() * 50; // 0-50vh
+        } else if (rand < 0.9) {
+          yPos = 50 + Math.random() * 25; // 50-75vh
+        } else {
+          yPos = 75 + Math.random() * 25; // 75-100vh
+        }
+        // Phân bố theo chiều ngang: 60% (50-100vw), 40% (0-50vw)
+        const xPos = Math.random() < 0.6 ? 50 + Math.random() * 50 : Math.random() * 50;
+        star.style.left = `${xPos}vw`;
+        star.style.top = `${yPos}vh`;
+        // Độ trễ ngẫu nhiên cho animation
+        star.style.animationDelay = `${Math.random() * 2}s`;
+        night.appendChild(star);
+      }
+    })();
+
+    // Cấu hình cho hạt trái tim
+    const settings = {
+      particles: {
+        length: 5000, // Số hạt tối đa
+        duration: 2.5, // Thời gian tồn tại của hạt (giây)
+        velocity: 200, // Vận tốc hạt (pixel/giây)
+        effect: -0.6, // Hiệu ứng gia tốc
+        size: 13, // Kích thước hạt
+      },
+    };
+
+    // Polyfill cho requestAnimationFrame
+    (function() {
+      let lastTime = 0;
+      const vendors = ['ms', 'moz', 'webkit', 'o'];
+      for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+      }
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(callback) {
+          const currTime = new Date().getTime();
+          const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+          const id = window.setTimeout(() => callback(currTime + timeToCall), timeToCall);
+          lastTime = currTime + timeToCall;
+          return id;
+        };
+      }
+      if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function(id) {
+          clearTimeout(id);
+        };
+      }
+    })();
+
+    // Lớp Point
+    class Point {
+      constructor(x = 0, y = 0) {
+        this.x = x;
+        this.y = y;
+      }
+      clone() {
+        return new Point(this.x, this.y);
+      }
+      length(length) {
+        if (typeof length === 'undefined') {
+          return Math.sqrt(this.x * this.x + this.y * this.y);
+        }
+        this.normalize();
+        this.x *= length;
+        this.y *= length;
+        return this;
+      }
+      normalize() {
+        const length = this.length();
+        if (length > 0) {
+          this.x /= length;
+          this.y /= length;
+        }
+        return this;
+      }
+    }
+
+    // Lớp Particle cho trái tim
+    class Particle {
+      constructor() {
+        this.position = new Point();
+        this.velocity = new Point();
+        this.acceleration = new Point();
+        this.age = 0;
+      }
+      initialize(x, y, dx, dy) {
+        this.position.x = x;
+        this.position.y = y;
+        this.velocity.x = dx;
+        this.velocity.y = dy;
+        this.acceleration.x = dx * settings.particles.effect;
+        this.acceleration.y = dy * settings.particles.effect;
+        this.age = 0;
+      }
+      update(deltaTime) {
+        this.position.x += this.velocity.x * deltaTime;
+        this.position.y += this.velocity.y * deltaTime;
+        this.velocity.x += this.acceleration.x * deltaTime;
+        this.velocity.y += this.acceleration.y * deltaTime;
+        this.age += deltaTime;
+      }
+      draw(context, image) {
+        const ease = t => --t * t * t + 1;
+        const size = image.width * ease(this.age / settings.particles.duration);
+        context.globalAlpha = 1 - this.age / settings.particles.duration;
+        context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
+      }
+    }
+
+    // Lớp ParticlePool cho trái tim
+    class ParticlePool {
+      constructor(length) {
+        this.particles = new Array(length).fill().map(() => new Particle());
+        this.firstActive = 0;
+        this.firstFree = 0;
+        this.duration = settings.particles.duration;
+      }
+      add(x, y, dx, dy) {
+        this.particles[this.firstFree].initialize(x, y, dx, dy);
+        this.firstFree++;
+        if (this.firstFree === this.particles.length) this.firstFree = 0;
+        if (this.firstActive === this.firstFree) this.firstActive++;
+        if (this.firstActive === this.particles.length) this.firstActive = 0;
+      }
+      update(deltaTime) {
+        let i;
+        if (this.firstActive < this.firstFree) {
+          for (i = this.firstActive; i < this.firstFree; i++) {
+            this.particles[i].update(deltaTime);
+          }
+        }
+        if (this.firstFree < this.firstActive) {
+          for (i = this.firstActive; i < this.particles.length; i++) {
+            this.particles[i].update(deltaTime);
+          }
+          for (i = 0; i < this.firstFree; i++) {
+            this.particles[i].update(deltaTime);
+          }
+        }
+        while (this.particles[this.firstActive].age >= this.duration && this.firstActive !== this.firstFree) {
+          this.firstActive++;
+          if (this.firstActive === this.particles.length) this.firstActive = 0;
+        }
+      }
+      draw(context, image) {
+        let i;
+        if (this.firstActive < this.firstFree) {
+          for (i = this.firstActive; i < this.firstFree; i++) {
+            this.particles[i].draw(context, image);
+          }
+        }
+        if (this.firstFree < this.firstActive) {
+          for (i = this.firstActive; i < this.particles.length; i++) {
+            this.particles[i].draw(context, image);
+          }
+          for (i = 0; i < this.firstFree; i++) {
+            this.particles[i].draw(context, image);
+          }
+        }
+      }
+    }
+
+    // Hàm tạo và vẽ hiệu ứng
+    (function() {
+      const pinkboard = document.getElementById('pinkboard');
+      const ctxHeart = pinkboard.getContext('2d');
+      const particles = new ParticlePool(settings.particles.length);
+      let time;
+
+      // Tạo ảnh hạt trái tim
+      const heartImage = (function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = settings.particles.size;
+        canvas.height = settings.particles.size;
+        const context = canvas.getContext('2d');
+        const to = t => {
+          const point = pointOnHeart(t);
+          point.x = settings.particles.size / 2 + (point.x * settings.particles.size) / 350;
+          point.y = settings.particles.size / 2 - (point.y * settings.particles.size) / 350;
+          return point;
+        };
+        context.beginPath();
+        let t = -Math.PI;
+        let point = to(t);
+        context.moveTo(point.x, point.y);
+        while (t < Math.PI) {
+          t += 0.01;
+          point = to(t);
+          context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        context.fillStyle = '#ff3490';
+        context.fill();
+        const image = new Image();
+        image.src = canvas.toDataURL();
+        return image;
+      })();
+
+      // Hàm định dạng trái tim
+      function pointOnHeart(t) {
+        return new Point(
+          160 * Math.pow(Math.sin(t), 3),
+          130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
+        );
+      }
+      function pointOnHeartSmall(t) {
+        return new Point(
+          160 * Math.pow(Math.sin(t), 3),
+          130 * Math.cos(t) - 20 * Math.cos(2 * t) - 8 * Math.cos(3 * t) - 4 * Math.cos(4 * t) + 5
+        );
+      }
+      function pointOnHeartLarge(t) {
+        return new Point(
+          320 * Math.pow(Math.sin(t), 3),
+          260 * Math.cos(t) - 100 * Math.cos(2 * t) - 40 * Math.cos(3 * t) - 4 * Math.cos(4 * t) + 30
+        );
+      }
+
+      // Hàm debounce cho resize
+      function debounce(fn, wait) {
+        let timeout;
+        return function(...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn(...args), wait);
+        };
+      }
+
+      // Xử lý resize
+      function resize() {
+        const heightRatio = 1.5;
+        pinkboard.width = pinkboard.clientWidth * heightRatio;
+        pinkboard.height = pinkboard.clientHeight * heightRatio;
+      }
+
+      // Vòng lặp vẽ
+      function render() {
+        requestAnimationFrame(render);
+        const newTime = new Date().getTime() / 1000;
+        const deltaTime = newTime - (time || newTime);
+        time = newTime;
+
+        // Xóa canvas
+        ctxHeart.clearRect(0, 0, pinkboard.width, pinkboard.height);
+
+        // Cập nhật và vẽ hạt trái tim
+        const particleRate = settings.particles.length / settings.particles.duration;
+        const amount = particleRate * deltaTime;
+        for (let i = 0; i < amount; i++) {
+          let pos, dir;
+          // Trái tim bình thường
+          pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+          dir = pos.clone().length(settings.particles.velocity);
+          particles.add(pinkboard.width / 2 + pos.x, pinkboard.height / 2 - pos.y, dir.x, -dir.y);
+          // Trái tim lớn
+          pos = pointOnHeartLarge(Math.PI - 2 * Math.PI * Math.random());
+          dir = pos.clone().length(100);
+          particles.add(pinkboard.width / 2 + pos.x, pinkboard.height / 2 - pos.y, dir.x, -dir.y);
+        }
+        particles.update(deltaTime);
+        particles.draw(ctxHeart, heartImage);
+      }
+
+      // Khởi tạo
+      window.addEventListener('resize', debounce(resize, 100));
+      resize();
+      render();
+    })();
+  </script>
+</body>
+</html>
