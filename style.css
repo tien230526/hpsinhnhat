@@ -1186,8 +1186,8 @@ body {
 }
 
 .bubble:nth-child(1) {
-  top: 8%;
-  left: 60%;
+  top: 10%;
+  left: 15%;
   height: 11vmin;
   width: 11vmin;
   animation: love-burst 3s infinite 0s;
@@ -1211,8 +1211,8 @@ body {
 }
 
 .bubble:nth-child(2) {
-  top: 83%;
-  left: 14%;
+  top: 75%;
+  left: 15%;
   height: 20vmin;
   width: 20vmin;
   animation: love-burst 3s infinite 0.15s;
@@ -1258,8 +1258,8 @@ body {
 }
 
 .bubble:nth-child(5) {
-  top: 7%;
-  left: 56%;
+  top: 15%;
+  left: 60%;
   height: 18vmin;
   width: 18vmin;
   animation: love-burst 3s infinite 0.6s;
@@ -1283,8 +1283,8 @@ body {
 }
 
 .bubble:nth-child(6) {
-  top: 10%;
-  left: 68%;
+  top: 30%;
+  left: 85%;
   height: 5vmin;
   width: 5vmin;
   animation: love-burst 3s infinite 0.75s;
@@ -1308,8 +1308,8 @@ body {
 }
 
 .bubble:nth-child(7) {
-  top: 68%;
-  left: 1%;
+  top: 60%;
+  left: 10%;
   height: 5vmin;
   width: 5vmin;
   animation: love-burst 3s infinite 0.9s;
@@ -1355,8 +1355,8 @@ body {
 }
 
 .bubble:nth-child(10) {
-  top: 13%;
-  left: 10%;
+  top: 50%;
+  left: 90%;
   height: 19vmin;
   width: 19vmin;
   animation: love-burst 3s infinite 1.35s;
@@ -1380,8 +1380,8 @@ body {
 }
 
 .bubble:nth-child(11) {
-  top: 76%;
-  left: 7%;
+  top: 80%;
+  left: 70%;
   height: 14vmin;
   width: 14vmin;
   animation: love-burst 3s infinite 1.5s;
@@ -1405,8 +1405,8 @@ body {
 }
 
 .bubble:nth-child(12) {
-  top: 22%;
-  left: 8%;
+  top: 30%;
+  left: 5%;
   height: 17vmin;
   width: 17vmin;
   animation: love-burst 3s infinite 1.65s;
@@ -1416,7 +1416,7 @@ body {
 }
 
 .bubble:nth-child(12)::after {
-  content: "birthday";
+  content: "luôn cười";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1430,8 +1430,8 @@ body {
 }
 
 .bubble:nth-child(13) {
-  top: 23%;
-  left: 81%;
+  top: 55%;
+  left: 75%;
   height: 16vmin;
   width: 16vmin;
   animation: love-burst 3s infinite 1.8s;
@@ -1441,7 +1441,7 @@ body {
 }
 
 .bubble:nth-child(13)::after {
-  content: "happy";
+  content: "lun tỏa sáng";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1500,7 +1500,7 @@ body {
 
 .bubble:nth-child(18) {
   top: 11%;
-  left: 83%;
+  left: 73%;
   height: 18vmin;
   width: 18vmin;
   animation: love-burst 3s infinite 2.55s;
@@ -1510,7 +1510,7 @@ body {
 }
 
 .bubble:nth-child(18)::after {
-  content: "- Lên mâm thôi 🍰";
+  content: "xinh hơn";
   position: absolute;
   top: 50%;
   left: 50%;
